@@ -1,0 +1,18 @@
+{
+  "name": "체크스캔 (CheckScan)",
+  "short_name": "체크스캔",
+  "description": "성분표 사진에서 알레르기 위험 성분을 확인하는 체크스캔 PWA",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#047857",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
