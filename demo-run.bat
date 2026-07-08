@@ -3,6 +3,9 @@ setlocal EnableDelayedExpansion
 
 cd /d "%~dp0"
 set "PROJECT_DIR=%~dp0"
+set "NODE_VERSION=20.18.0"
+set "LOCAL_TOOLS_DIR=%PROJECT_DIR%.tools"
+set "LOCAL_NODE_DIR=%LOCAL_TOOLS_DIR%\node-v%NODE_VERSION%-win-x64"
 
 echo.
 echo ============================================
@@ -31,6 +34,13 @@ if not exist ".env" (
     pause
   )
   echo.
+)
+
+call :ensure_node
+if errorlevel 1 (
+  echo.
+  pause
+  exit /b 1
 )
 
 if not exist "node_modules" (
@@ -87,3 +97,49 @@ for %%P in (%SERVER_PIDS%) do (
 )
 timeout /t 2 /nobreak >nul
 goto start_server
+
+:ensure_node
+where node >nul 2>nul
+if not errorlevel 1 (
+  where npm >nul 2>nul
+  if not errorlevel 1 (
+    for /f "tokens=*" %%V in ('node -v') do echo [OK] Node.js %%V detected.
+    exit /b 0
+  )
+)
+
+if exist "%LOCAL_NODE_DIR%\node.exe" (
+  set "PATH=%LOCAL_NODE_DIR%;%PATH%"
+  echo [OK] Using portable Node.js from .tools.
+  exit /b 0
+)
+
+echo [SETUP] Node.js/npm was not found on this computer.
+echo         Downloading portable Node.js v%NODE_VERSION% into .tools...
+echo         This does not require administrator permissions.
+echo.
+
+where powershell >nul 2>nul
+if errorlevel 1 (
+  echo [ERROR] PowerShell was not found, so Node.js cannot be installed automatically.
+  echo         Install Node.js 20 or later manually, then run this file again.
+  exit /b 1
+)
+
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$ErrorActionPreference='Stop'; $version='%NODE_VERSION%'; $tools=Join-Path (Get-Location) '.tools'; $zip=Join-Path $tools ('node-v' + $version + '-win-x64.zip'); $url='https://nodejs.org/dist/v' + $version + '/node-v' + $version + '-win-x64.zip'; New-Item -ItemType Directory -Force -Path $tools | Out-Null; Invoke-WebRequest -Uri $url -OutFile $zip; Expand-Archive -LiteralPath $zip -DestinationPath $tools -Force"
+if errorlevel 1 (
+  echo.
+  echo [ERROR] Portable Node.js download or extraction failed.
+  echo         Check the school network connection, firewall, or proxy settings.
+  echo         If downloads are blocked, copy both .tools and node_modules from another computer, or install Node.js manually.
+  exit /b 1
+)
+
+if exist "%LOCAL_NODE_DIR%\node.exe" (
+  set "PATH=%LOCAL_NODE_DIR%;%PATH%"
+  echo [OK] Portable Node.js is ready.
+  exit /b 0
+)
+
+echo [ERROR] Portable Node.js was downloaded, but node.exe was not found.
+exit /b 1

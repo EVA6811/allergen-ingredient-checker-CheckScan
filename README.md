@@ -4,9 +4,9 @@ CheckScan is a React + TypeScript + Vite demo app that scans food ingredient lab
 
 ## Quick Start For Grading
 
-1. Install Node.js 20 or later.
-2. Double-click `demo-run.bat`.
-3. When prompted, enter a Gemini API key.
+1. Double-click `demo-run.bat`.
+2. When prompted, enter a Gemini API key.
+3. If Node.js/npm is missing, the script downloads portable Node.js into `.tools`.
 4. The script installs dependencies if needed, starts the Vite dev server, and opens:
 
 ```text
@@ -14,6 +14,8 @@ http://127.0.0.1:5173
 ```
 
 The `.env` file is intentionally not included in submissions because it contains a private API key. `demo-run.bat` creates it locally.
+
+If the school network blocks downloads from `nodejs.org` or `npm`, install Node.js 20 or later manually, copy `.tools` and `node_modules` from another computer, or run the project on a computer where package downloads are allowed.
 
 ## Manual Run
 
@@ -47,7 +49,7 @@ New accounts cannot include `admin` in the username.
 
 ## Notes
 
-- Submit the project files without `.env`, `node_modules`, `dist`, and `local-uploads`.
+- Submit the project files without `.env`, `node_modules`, `dist`, `.tools`, and `local-uploads`.
 - The local image save API is implemented as a Vite dev server plugin, so run the project with `npm run dev` for grading.
 - Uploaded food images may be saved under `local-uploads` during local demo runs.
 - Allergy profile images used for automatic allergy input are analyzed only and are not saved to upload history or scan history.

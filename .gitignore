@@ -16,6 +16,7 @@ memo.txt
 .agents
 .codex
 .tmp*
+.tools
 *.local
 .env
 .env.*
