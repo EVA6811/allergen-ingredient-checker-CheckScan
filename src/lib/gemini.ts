@@ -58,6 +58,38 @@ function normalizeRiskStatus(status: RiskStatus, detectedIngredients: DetectedIn
   return 'warning'
 }
 
+function createImageAssessmentIssue(imageAssessment: AnalysisResult['imageAssessment']): AnalysisResult['analysisIssue'] {
+  if (!imageAssessment) return null
+
+  const qualityText = imageAssessment.qualityIssues.join(' ')
+  const reasonText = imageAssessment.reason
+  const assessmentText = `${qualityText} ${reasonText}`
+
+  if (!imageAssessment.isIngredientLabel) {
+    return {
+      type: 'not_ingredient_label',
+      title: '성분표 사진이 아닙니다.',
+      message: '원재료명, 알레르기 표시, 영양정보처럼 식품 성분을 확인할 수 있는 글자가 보이도록 다시 촬영하거나 업로드해 주세요.',
+    }
+  }
+
+  if (imageAssessment.confidence === 'low') {
+    const looksUnreadable =
+      /흔들|초점|어두|잘림|작|부족|읽기|인식|품질|화질/.test(assessmentText) ||
+      imageAssessment.qualityIssues.some((issue) => /흔들|초점|어두|잘림|작|부족|품질|화질/.test(issue))
+
+    return {
+      type: looksUnreadable ? 'low_image_quality' : 'insufficient_text',
+      title: looksUnreadable ? '사진 품질을 확인해 주세요.' : '성분표 글자를 확인할 수 없습니다.',
+      message: looksUnreadable
+        ? '글자가 흔들리거나 흐려서 성분 분석을 확정할 수 없습니다. 성분표가 선명하게 보이도록 다시 촬영해 주세요.'
+        : '성분표 여부가 불확실해 알레르기 성분을 판단하지 않았습니다. 원재료명이나 알레르기 표시가 보이는 사진을 사용해 주세요.',
+    }
+  }
+
+  return null
+}
+
 function normalizeResult(value: unknown): AnalysisResult {
   const fallback: AnalysisResult = { status: 'safe', detectedIngredients: [] }
 
@@ -124,13 +156,14 @@ function normalizeResult(value: unknown): AnalysisResult {
         .filter(Boolean)
     : []
 
-  const normalizedIngredients = analysisIssue ? [] : (detectedIngredients as AnalysisResult['detectedIngredients'])
+  const derivedAnalysisIssue = analysisIssue ?? createImageAssessmentIssue(imageAssessment)
+  const normalizedIngredients = derivedAnalysisIssue ? [] : (detectedIngredients as AnalysisResult['detectedIngredients'])
 
   return {
-    status: normalizeRiskStatus(status, normalizedIngredients, Boolean(analysisIssue)),
+    status: normalizeRiskStatus(status, normalizedIngredients, Boolean(derivedAnalysisIssue)),
     detectedIngredients: normalizedIngredients,
     imageAssessment,
-    analysisIssue,
+    analysisIssue: derivedAnalysisIssue,
   }
 }
 
