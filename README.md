@@ -1,32 +1,62 @@
-# React + TypeScript + Vite
+# CheckScan
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+CheckScan is a React + TypeScript + Vite demo app that scans food ingredient labels and compares them with a user's allergy or dietary restriction profile.
 
-Currently, two official plugins are available:
+## Quick Start For Grading
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+1. Install Node.js 20 or later.
+2. Double-click `demo-run.bat`.
+3. When prompted, enter a Gemini API key.
+4. The script installs dependencies if needed, starts the Vite dev server, and opens:
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```text
+http://127.0.0.1:5173
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+The `.env` file is intentionally not included in submissions because it contains a private API key. `demo-run.bat` creates it locally.
+
+## Manual Run
+
+Create `.env` from `.env.example`:
+
+```bash
+cp .env.example .env
+```
+
+Then edit `.env`:
+
+```env
+VITE_GEMINI_API_KEY=your_gemini_api_key_here
+```
+
+Install and run:
+
+```bash
+npm install
+npm run dev
+```
+
+## Demo Account
+
+```text
+ID: admin
+PW: admin123
+```
+
+New accounts cannot include `admin` in the username.
+
+## Notes
+
+- Submit the project files without `.env`, `node_modules`, `dist`, and `local-uploads`.
+- The local image save API is implemented as a Vite dev server plugin, so run the project with `npm run dev` for grading.
+- Uploaded food images may be saved under `local-uploads` during local demo runs.
+- Allergy profile images used for automatic allergy input are analyzed only and are not saved to upload history or scan history.
+
+## Scripts
+
+```bash
+npm run dev
+npm run build
+npm run lint
+npm run preview
+```

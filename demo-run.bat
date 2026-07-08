@@ -11,8 +11,25 @@ echo ============================================
 echo.
 
 if not exist ".env" (
-  echo [WARN] .env file was not found.
-  echo        Gemini API analysis may fail until VITE_GEMINI_API_KEY is configured.
+  echo [SETUP] .env file was not found.
+  echo         This file is not included in assignment submissions because it contains a private API key.
+  echo.
+  set /p "GEMINI_KEY=Enter Gemini API key now, or press Enter to create a template only: "
+  if defined GEMINI_KEY (
+    > ".env" echo VITE_GEMINI_API_KEY=!GEMINI_KEY!
+    echo [OK] .env was created with the API key you entered.
+  ) else (
+    if exist ".env.example" (
+      copy /Y ".env.example" ".env" >nul
+    ) else (
+      > ".env" echo VITE_GEMINI_API_KEY=your_gemini_api_key_here
+    )
+    echo [WARN] .env was created as a template.
+    echo        Open .env and replace your_gemini_api_key_here with a real Gemini API key.
+    start "" notepad ".env"
+    echo.
+    pause
+  )
   echo.
 )
 

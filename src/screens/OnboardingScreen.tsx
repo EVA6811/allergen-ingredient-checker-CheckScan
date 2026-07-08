@@ -36,7 +36,6 @@ export function OnboardingScreen() {
   const [accessibilityDraft, setAccessibilityDraft] = useState<AccessibilitySettings>(accessibility)
   const [isProfileCameraOpen, setIsProfileCameraOpen] = useState(false)
   const [isExtractingAllergies, setIsExtractingAllergies] = useState(false)
-  const [profileImagePreview, setProfileImagePreview] = useState<string | null>(null)
   const [profileExtractionNote, setProfileExtractionNote] = useState<string | null>(null)
 
   const account = accounts.find((item) => item.id === currentUserId)
@@ -88,9 +87,8 @@ export function OnboardingScreen() {
   }
 
   const analyzeProfileImage = async (imageData: string) => {
-    setProfileImagePreview(imageData)
     setIsExtractingAllergies(true)
-    setProfileExtractionNote(null)
+    setProfileExtractionNote('사진은 저장하지 않고 자동 입력 분석에만 사용합니다.')
     try {
       const result = await extractAllergiesFromProfileImage(imageData)
       const addedCount = mergeExtractedAllergies(result.allergies)
@@ -311,15 +309,15 @@ export function OnboardingScreen() {
               </div>
             )}
 
-            {profileImagePreview && (
-              <div className="grid gap-3 rounded-lg border border-emerald-200 bg-white p-3 sm:grid-cols-[112px,1fr]">
-                <img src={profileImagePreview} alt="자동 입력에 사용한 알레르기 정보 사진" className="h-28 w-full rounded-md object-cover sm:w-28" />
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-slate-950">분석한 사진</p>
-                  <p className="mt-1 text-sm leading-5 text-slate-600">
-                    {profileExtractionNote ?? '분석 결과가 이 화면의 선택 목록에 자동 반영됩니다.'}
-                  </p>
-                </div>
+            {profileExtractionNote && (
+              <div className="rounded-lg border border-emerald-200 bg-white p-3">
+                <p className="text-sm font-semibold text-slate-950">자동 입력 결과</p>
+                <p className="mt-1 text-sm leading-5 text-slate-600">
+                  {profileExtractionNote}
+                  <span className="mt-1 block text-xs text-slate-500">
+                    업로드 또는 촬영한 알레르기 표 이미지는 저장 목록과 기록에 남기지 않습니다.
+                  </span>
+                </p>
               </div>
             )}
           </section>

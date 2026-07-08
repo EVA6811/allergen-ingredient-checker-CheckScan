@@ -215,6 +215,9 @@ export const useAppStore = create<AppState>()(
         if (normalizePhone(phone).length < 10) return { ok: false, message: '전화번호를 정확히 입력해 주세요.' }
         if (username.length < 3) return { ok: false, message: '아이디는 3자 이상 입력해 주세요.' }
         if (password.length < 4) return { ok: false, message: '비밀번호는 4자 이상 입력해 주세요.' }
+        if (username.toLowerCase().includes('admin')) {
+          return { ok: false, message: '아이디에 admin을 포함할 수 없습니다.' }
+        }
         if (isDemoUsername(username) || ensureDemoAccount(get().accounts).some((account) => account.username.toLowerCase() === username.toLowerCase())) {
           return { ok: false, message: '이미 존재하는 아이디입니다.' }
         }
